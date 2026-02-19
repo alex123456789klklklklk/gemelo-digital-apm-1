@@ -23,9 +23,15 @@ if "ia_activa" not in st.session_state:
 # ------------------------
 # LOGO
 # ------------------------
+import os
+
 col1, col2 = st.columns([6,1])
+
 with col2:
-    st.image("logo.png", width=120)
+    if os.path.exists("logo.png"):
+        st.image("logo.png", width=120)
+    else:
+        st.write("")  # no rompe la app si no existe
 
 # ------------------------
 # TITULO
