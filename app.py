@@ -202,7 +202,6 @@ Este enfoque maximiza la eficiencia global de la terminal, evitando trade-offs e
 
 st.session_state.frame += 1
 time.sleep(0.05)
-st.rerun()
 
 
 
