@@ -1,152 +1,209 @@
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import numpy as np
 import time
 
-# ------------------------
-# CONFIG
-# ------------------------
+
 st.set_page_config(layout="wide")
 
-# ------------------------
-# ESTADO INICIAL
-# ------------------------
-if "frame" not in st.session_state:
-    st.session_state.frame = 0
-
-if "escenario" not in st.session_state:
-    st.session_state.escenario = "Baseline"
-
-if "ia_activa" not in st.session_state:
-    st.session_state.ia_activa = False
 
 # ------------------------
-# LOGO
+# HEADER CON LOGO
 # ------------------------
-import os
 
 col1, col2 = st.columns([6,1])
 
+with col1:
+    st.title("Gemelo Digital - Terminal APM Barcelona")
+
 with col2:
-    if os.path.exists("logo.png"):
-        st.image("logo.png", width=120)
-    else:
-        st.write("")  # no rompe la app si no existe
+    st.image("apm_logo.png", width=120)
+
 
 # ------------------------
-# TITULO
+# ESTADO
 # ------------------------
-st.title("Gemelo Digital - Terminal APM Barcelona")
+
+if "frame" not in st.session_state:
+   st.session_state.frame = 0
+
+if "escenario" not in st.session_state:
+   st.session_state.escenario = "Baseline"
+
 
 # ------------------------
 # SELECTOR
 # ------------------------
-escenario = st.radio(
-    "Selecciona escenario:",
-    ["Baseline", "Productivo", "Energético", "Ambiental"]
+
+opcion = st.radio(
+   "Selecciona escenario:",
+   ["Baseline", "Productivo", "Energético", "Ambiental", "Optimizado IA"]
 )
 
-st.session_state.escenario = escenario
+st.session_state.escenario = opcion
+
 
 # ------------------------
-# BOTON IA
+# PARÁMETROS
 # ------------------------
-if st.button("Optimizar con IA"):
-    st.session_state.ia_activa = True
+
+if opcion == "Baseline":
+   gmph = 35
+   energia = 33.90
+   co2 = 11203
+   velocidad = 1.5
+   num_humo = 4
+   num_co2 = 4
+
+elif opcion == "Productivo":
+   gmph = 45.85
+   energia = 44.42
+   co2 = 14676
+   velocidad = 3
+   num_humo = 7
+   num_co2 = 7
+
+elif opcion == "Energético":
+   gmph = 35
+   energia = 28.16
+   co2 = 9310
+   velocidad = 1.2
+   num_humo = 2
+   num_co2 = 2
+
+elif opcion == "Ambiental":
+   gmph = 35
+   energia = 33.90
+   co2 = 10172
+   velocidad = 1.5
+   num_humo = 4
+   num_co2 = 1
+
+elif opcion == "Optimizado IA":
+   gmph = 40
+   energia = 30
+   co2 = 9500
+   velocidad = 2
+   num_humo = 3
+   num_co2 = 2
+
 
 # ------------------------
-# PARAMETROS
+# REPRESENTACIÓN
 # ------------------------
-params = {
-    "Baseline": (30, 35, 12000),
-    "Productivo": (46, 46, 15700),
-    "Energético": (30, 28, 9300),
-    "Ambiental": (30, 35, 10172),
-    "IA": (40, 30, 9500)
-}
 
-# Selección final
-if st.session_state.ia_activa:
-    gmph, energia, co2 = params["IA"]
-    escenario_final = "Optimizado IA"
-else:
-    gmph, energia, co2 = params[escenario]
-    escenario_final = escenario
+frame = st.session_state.frame
 
-# ------------------------
-# ANIMACION
-# ------------------------
-fig, ax = plt.subplots(figsize=(12,5))
+fig, ax = plt.subplots(figsize=(14,6))
+ax.set_facecolor('#d0d3d4')
 
-# Puerto base
-ax.add_patch(plt.Rectangle((0,0), 100, 50))  # agua
-ax.add_patch(plt.Rectangle((0,50), 100, 50)) # tierra
+# MAR
+ax.add_patch(patches.Rectangle((0, 0), 100, 25, color='#5dade2'))
 
-# Buque
-container_progress = (st.session_state.frame * gmph * 0.1) % 100
+# MUELLE
+ax.add_patch(patches.Rectangle((0, 25), 100, 20, color='#7f8c8d'))
 
-ax.add_patch(plt.Rectangle((10,20), 30,10))  # barco
+# BUQUE
+ax.add_patch(patches.Rectangle((20, 8), 60, 10, color='#2c3e50'))
+ax.add_patch(patches.Rectangle((30, 18), 40, 5, color='#c0392b'))
 
-# Contenedores en barco
-for i in range(int(container_progress/5)):
-    ax.add_patch(plt.Rectangle((10+i, 30), 1, 2))
+# CARGA SEGÚN GMPH
+progreso = min(1, (frame / 60) * (gmph / 45.85))
 
-# Grúas
-for x in [20,40,60,80]:
-    ax.add_patch(plt.Rectangle((x,60), 2,15))
-    ax.add_patch(plt.Rectangle((x,75), 10,2))
-    
-    # contenedor moviéndose (verde)
-    y_move = 60 + abs(np.sin(st.session_state.frame/5))*15
-    ax.add_patch(plt.Rectangle((x+4, y_move), 2,2))
+for i in range(int(progreso * 20)):
+   x = 25 + (i % 10) * 5
+   y = 10 + (i // 10) * 3
+   ax.add_patch(patches.Rectangle((x, y), 3, 2, color='green'))
 
-ax.set_xlim(0,100)
-ax.set_ylim(0,100)
+# GRÚAS
+posiciones = np.linspace(5, 95, 14)
+
+for i, x in enumerate(posiciones):
+   desplazamiento = np.sin(frame * 0.15 * velocidad + i) * 1.2
+
+   ax.add_patch(patches.Rectangle((x + desplazamiento, 25), 2, 15, color='#f39c12'))
+
+   ax.add_line(plt.Line2D(
+       [x+1 + desplazamiento, x+6 + desplazamiento],
+       [40, 48],
+       linewidth=2
+   ))
+
+   ax.add_patch(patches.Rectangle(
+       (x+6 + desplazamiento, 46),
+       2,
+       2,
+       color='green'
+   ))
+
+# HUMO
+humo_x = np.linspace(15, 85, num_humo)
+for x in humo_x:
+   ax.add_patch(patches.Circle((x, 50), 2, color='#7f8c8d'))
+
+# CO2
+co2_x = np.linspace(20, 80, num_co2)
+for x in co2_x:
+   y = 60 + np.sin(frame * 0.1 + x) * 1.5
+   ax.add_patch(patches.Circle((x, y), 3, color='#bdc3c7'))
+   ax.text(x, y, "CO2", ha='center', fontsize=9)
+
+ax.set_xlim(0, 100)
+ax.set_ylim(0, 70)
 ax.axis('off')
 
 st.pyplot(fig)
 
+
 # ------------------------
-# KPIs
+# KPI
 # ------------------------
-st.subheader("KPIs del escenario")
+
+st.subheader("📊 Indicadores KPI")
 
 col1, col2, col3 = st.columns(3)
+
 col1.metric("GMPH", gmph)
-col2.metric("Energía (GWh)", energia)
-col3.metric("CO2 (t)", co2)
+col2.metric("Energía (GWh/año)", energia)
+col3.metric("CO2 (ton/año)", co2)
+
 
 # ------------------------
-# IA EXPLICACION
+# EXPLICACIÓN IA
 # ------------------------
-if st.session_state.ia_activa:
 
-    st.subheader("Optimización mediante Inteligencia Artificial")
+if opcion == "Optimizado IA":
 
-    st.markdown("""
+   st.subheader("🧠 Explicación del modelo de optimización")
+
+   st.markdown("""
 La solución propuesta por la Inteligencia Artificial se basa en el análisis de los tres benchmarks desarrollados en este estudio: productivo, energético y ambiental.
 
 En primer lugar, el benchmark productivo demuestra que es posible aumentar significativamente la eficiencia operativa de la terminal, alcanzando 45,85 GMPH y reduciendo el tiempo de estancia de los buques en un 25,2%. Sin embargo, esta mejora implica un incremento del 31% tanto en el consumo energético como en las emisiones de CO2, lo que lo convierte en un escenario poco sostenible.
 
-Por otro lado, el benchmark energético reduce el consumo en un 16,9% (de 33,90 GWh a 28,16 GWh), lo que conlleva una disminución proporcional de emisiones hasta 9.310 toneladas de CO2. No obstante, este escenario no mejora la productividad operativa.
+Por otro lado, el benchmark energético reduce el consumo en un 16,9%, lo que conlleva una disminución proporcional de emisiones. No obstante, este escenario no mejora la productividad operativa.
 
-Finalmente, el benchmark ambiental consigue reducir las emisiones en un 9,2% (hasta 10.172 toneladas de CO2) sin afectar a la productividad ni al consumo energético, mediante estrategias de descarbonización y tecnologías limpias.
+Finalmente, el benchmark ambiental consigue reducir las emisiones sin afectar a la productividad ni al consumo energético.
 
 Ante estos resultados, la IA propone un escenario híbrido que equilibra los tres enfoques:
 
-• Mantiene una productividad eficiente para evitar congestión portuaria  
-• Reduce el consumo energético respecto al escenario productivo  
-• Minimiza las emisiones de CO2 sin comprometer la operativa  
+• Productividad eficiente (40 GMPH)  
+• Menor consumo energético (30 GWh)  
+• Reducción de emisiones (9.500 t CO2)  
 
-Este enfoque permite maximizar la eficiencia global de la terminal APM de Barcelona, evitando los trade-offs extremos observados en los benchmarks individuales.
+Este enfoque maximiza la eficiencia global de la terminal, evitando trade-offs extremos.
 """)
 
+
 # ------------------------
-# LOOP DE ANIMACION
+# ANIMACIÓN
 # ------------------------
+
 st.session_state.frame += 1
 time.sleep(0.05)
 st.rerun()
+
 
 
 
