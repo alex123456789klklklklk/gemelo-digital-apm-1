@@ -72,7 +72,10 @@ ax.add_patch(patches.Rectangle((30, 18), 40, 5, color='#c0392b'))
 
 # 🔥 CARGA MEJORADA CON GMPH + CICLO
 ciclo = (frame % 120)
-velocidad_carga = gmph / 25
+
+# ✅ CAMBIO AQUÍ (más diferencia entre escenarios)
+velocidad_carga = (gmph / 35) ** 2
+
 contenedores = int((ciclo * velocidad_carga) % 20)
 
 for i in range(contenedores):
@@ -157,7 +160,7 @@ A partir de estos resultados, el algoritmo plantea un escenario híbrido que equ
 Este enfoque permite maximizar la eficiencia global de la terminal, evitando trade-offs extremos.
 """)
 else:
-    algoritmo_placeholder.empty()  # 🔥 ESTO ELIMINA EL TEXTO SI CAMBIAS
+    algoritmo_placeholder.empty()
 
 # ------------------------
 # LOOP
