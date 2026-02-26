@@ -139,12 +139,12 @@ k3.metric("CO2 (ton/año)", co2)
 
 
 # ------------------------
-# IA (CONTROLADO)
+# HERRAMIENTA (CONTROLADO)
 # ------------------------
 
-if opcion == "Optimizado IA":
+if opcion == "Algoritmo":
     with st.container():
-        st.subheader("🧠 Modelo de optimización basado en reglas")
+        st.subheader("Modelo de optimización basado en reglas")
 
         st.markdown("""
 Este modelo no genera resultados de forma arbitraria, sino que aplica reglas derivadas del análisis de benchmarks previos.
@@ -155,7 +155,22 @@ Se construye un escenario híbrido que equilibra:
 - Consumo energético
 - Emisiones de CO2
 
-El sistema prioriza soluciones que eviten incrementos extremos en cualquiera de los tres indicadores, generando una configuración operativa más eficiente y sostenible.
+La solución propuesta por la herramienta se basa en el análisis de los tres benchmarks desarrollados en este estudio: productivo, energético y ambiental.
+
+En primer lugar, el benchmark productivo demuestra que es posible aumentar significativamente la eficiencia operativa de la terminal, alcanzando 45,85 GMPH y reduciendo el tiempo de estancia de los buques en un 25,2%. Sin embargo, esta mejora implica un incremento del 31% tanto en el consumo energético como en las emisiones de CO2, lo que lo convierte en un escenario poco sostenible.
+
+Por otro lado, el benchmark energético reduce el consumo en un 16,9%, lo que conlleva una disminución proporcional de emisiones. No obstante, este escenario no mejora la productividad operativa.
+
+Finalmente, el benchmark ambiental consigue reducir las emisiones sin afectar a la productividad ni al consumo energético.
+
+Ante estos resultados, la herramienta propone un escenario híbrido que equilibra los tres enfoques:
+
+• Productividad eficiente (40 GMPH)  
+• Menor consumo energético (30 GWh)  
+• Reducción de emisiones (9.500 t CO2)  
+
+Este enfoque maximiza la eficiencia global de la terminal, evitando trade-offs extremos.
+
 """)
 
 
