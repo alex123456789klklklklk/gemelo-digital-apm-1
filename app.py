@@ -42,7 +42,7 @@ elif opcion == "Productivo":
     gmph, energia, co2, velocidad, num_humo, num_co2 = 45.85, 44.42, 14676, 3, 7, 7
 
 elif opcion == "Energético":
-    gmph, energia, co2, velocidad, num_humo, num_co2 = 35, 28.16, 9310, 1.2, 2, 2
+    gmph, energia, co2, velocidad, num_humo, num_co2 = 35, 28.16, 9314.5, 1.2, 2, 2
 
 elif opcion == "Ambiental":
     gmph, energia, co2, velocidad, num_humo, num_co2 = 35, 33.9, 10172, 1.5, 4, 1
